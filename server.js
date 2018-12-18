@@ -47,10 +47,27 @@ app.post('/shopping-list', jsonParser, (req, res) => {
   res.status(201).json(item);
 });
 
+app.post('/recipes', jsonParser, (req, res) => {
+  const requiredRecipeFields = ['name', 'ingredients'];
+
+  for (let i = 0; i < requiredRecipeFields.length; i++) {
+    const f = requiredRecipeFields[i];
+
+    if (!(f in req.body)) {
+      const errMessage = `Missing \`${f}\` in request body`;
+      console.error(errMessage);
+      return res.status(400).send(errMessage);
+    }
+  }
+
+  const newRecipe = Recipes.create(req.body.name, req.body.ingredients);
+  res.status(201).json(newRecipe);
+
+});
 
 app.get('/recipes', (req, res) => {
   res.json(Recipes.get());
-})
+});
 
 app.listen(process.env.PORT || 8080, () => {
   console.log(`Your app is listening on port ${process.env.PORT || 8080}`);
